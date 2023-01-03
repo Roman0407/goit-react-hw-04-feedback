@@ -1,32 +1,49 @@
-import { Profile } from './profile/Profile';
-import user from './profile/user.json';
+import { useState } from "react";
+import { FeedbackOptions } from "./feedback-options/FeedbackOptions";
+import { FeddbackSection } from "./feedback-section/Section";
+import { GlobalStyle } from "./GlobalStyle.styled";
+import { Statistics } from "./statistics/Statistics";
 
-import { GlobalStyle } from './GlobalStyle';
-import { Container } from './Container.styled';
-
-import { Statistics } from './statistics/Statistics';
-import statistics from './statistics/data.json';
-
-import { ProfileFriends } from './friendList/FriendList'
-import friends from './friendList/friends.json';
-
-
-import { ProfileTransactionHistory } from './transactionHistory/TransactionHistory'
-import transactions from './transactionHistory/transactions.json';
-
-const { username, tag, location, avatar, stats, } = user;
 export const App = () => {
-  return (
-    <Container>
-      <GlobalStyle />
-      <Profile username={username} tag={tag} location={location} avatar={avatar} stats={stats} />;
-      <Statistics title='Upload stats' stats={statistics} />;
-      <ProfileFriends friends={friends} />;
-      <ProfileTransactionHistory items={transactions} />;
-    </Container>
-  );
+
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const options = ["good", "neutral", "bad"];
+
+  const countTotalFeedbacks = () => good + neutral + bad;
+
+  const countPositivePersentage = () => Math.round(good / (countTotalFeedbacks() / 100));
+
+  const clickHandling = (item) => {
+    switch (item) {
+      case "good":
+        setGood(good + 1);
+        break;
+      case "neutral":
+        setNeutral(neutral + 1);
+        break;
+      case "bad":
+        setBad(bad + 1);
+        break;
+      default:
+        return;
+    }
+  }
+
+  return (<>
+    <GlobalStyle />
+    <FeddbackSection title={"Please leave feedback"}>
+      <FeedbackOptions options={options} onLeaveFeedback={clickHandling}></FeedbackOptions>
+      <Statistics
+        good={good}
+        neutral={neutral}
+        bad={bad}
+        total={countTotalFeedbacks()}
+        positivePercentage={countPositivePersentage()}>
+      </Statistics>
+    </FeddbackSection>
+  </>
+  )
 };
-
-
-
-
